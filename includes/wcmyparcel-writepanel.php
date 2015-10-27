@@ -209,14 +209,18 @@ class WC_MyParcel_Writepanel {
 		$username = $this->settings['api_username'];
 		$api_key = $this->settings['api_key'];
 
-		$webshop = plugin_dir_url( __FILE__ ) . '/wcmyparcel-pakjegemak-passdata.html';
+		$webshop = plugin_dir_url( __FILE__ ) . 'wcmyparcel-pakjegemak-passdata.html';
 		$hash = hash_hmac('sha1', $username . 'MyParcel' . $webshop, $api_key);
 
 		// check for secure context
 		$context = is_ssl() ? 'https' : 'http';
 
-		$popup_url = sprintf('%s://www.myparcel.nl/pakjegemak-locatie?hash=%s&webshop=%s&user=%s', $context, $hash, $webshop, $username);
-
+		// $popup_url = sprintf('%s://www.myparcel.nl/pakjegemak-locatie?hash=%s&webshop=%s&user=%s', $context, $hash, $webshop, $username);
+		$local_pg_url = plugin_dir_url( __FILE__ ) . 'wcmyparcel-pakjegemak-popup.php';
+		$popup_url = sprintf($local_pg_url.'?hash=%s&webshop=%s&user=%s', $hash, $webshop, $username);
+		if (is_ssl()) {
+			$popup_url = add_query_arg( array('is_ssl' => 'true' ), $popup_url );
+		}
 
 		if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '<=' ) ) {
 			// old versions use 'shiptobilling'
